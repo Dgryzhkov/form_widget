@@ -9,6 +9,26 @@ class RegisterFormPage extends StatefulWidget {
 class _RegisterFormPageState extends State<RegisterFormPage> {
   bool _hidePass = true;
 
+  final _formKey = GlobalKey<FormState>();
+
+  final _nameController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _storyController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmController = TextEditingController();
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _phoneController.dispose();
+    _emailController.dispose();
+    _storyController.dispose();
+    _passwordController.dispose();
+    _confirmController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,10 +37,12 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
         centerTitle: true,
       ),
       body: Form(
+        key: _formKey,
         child: ListView(
           padding: EdgeInsets.all(16.0),
           children: [
             TextFormField(
+              controller: _nameController,
               decoration: InputDecoration(
                 labelText: 'Full name *',
                 hintText: 'What do people call you',
@@ -42,9 +64,11 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                   borderSide: BorderSide(color: Colors.blue, width: 2.0),
                 ),
               ),
+              validator: _validateName,
             ),
             SizedBox(height: 10),
             TextFormField(
+              controller: _phoneController,
               decoration: InputDecoration(
                 labelText: 'Phone Number',
                 hintText: 'Where can reach you?',
@@ -72,6 +96,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
             ),
             SizedBox(height: 10),
             TextFormField(
+              controller: _emailController,
               decoration: InputDecoration(
                 labelText: 'Email Address',
                 hintText: 'Enter  email address',
@@ -81,6 +106,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
             ),
             SizedBox(height: 20),
             TextFormField(
+              controller: _storyController,
               decoration: InputDecoration(
                 labelText: 'Life Story',
                 hintText: 'Tell us about your self',
@@ -88,9 +114,13 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                 border: OutlineInputBorder(),
               ),
               maxLines: 3,
+              inputFormatters: [
+                LengthLimitingTextInputFormatter(100),
+              ],
             ),
             SizedBox(height: 10),
             TextFormField(
+              controller: _passwordController,
               obscureText: _hidePass,
               maxLength: 8,
               decoration: InputDecoration(
@@ -110,21 +140,18 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
             ),
             SizedBox(height: 10),
             TextFormField(
+              controller: _confirmController,
               obscureText: _hidePass,
               maxLength: 8,
               decoration: InputDecoration(
                 labelText: 'Confirm Password',
                 hintText: 'Confirm the password',
-                // suffixIcon: IconButton(
-                //   onPressed: () {},
-                //   icon: Icon(Icons.visibility),
-                // ),
                 icon: Icon(Icons.border_color),
               ),
             ),
             SizedBox(height: 15),
             RaisedButton(
-              onPressed: () {},
+              onPressed: _submitForm,
               color: Colors.green,
               child: Text(
                 'Submit Form',
@@ -135,5 +162,26 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
         ),
       ),
     );
+  }
+
+  void _submitForm() {
+    if (_formKey.currentState!.validate()) {
+      print('Form is valid');
+      print('Name: ${_nameController.text}');
+      print('Phone: ${_phoneController.text}');
+      print('Email: ${_emailController.text}');
+      print('Story: ${_storyController.text}');
+    }
+  }
+
+  String? _validateName(String value) {
+    final _nameExp = RegExp(r'[A-Za-z]+$');
+    if (value.isEmpty) {
+      return 'Name is requared';
+    } else if (_nameExp.hasMatch(value)) {
+      return 'Please enter alphabetical characters';
+    } else {
+      return null;
+    }
   }
 }
