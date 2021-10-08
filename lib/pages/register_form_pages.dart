@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class RegisterFormPage extends StatefulWidget {
   @override
@@ -6,6 +7,8 @@ class RegisterFormPage extends StatefulWidget {
 }
 
 class _RegisterFormPageState extends State<RegisterFormPage> {
+  bool _hidePass = true;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,6 +67,8 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                   borderSide: BorderSide(color: Colors.blue, width: 2.0),
                 ),
               ),
+              keyboardType: TextInputType.phone,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             ),
             SizedBox(height: 10),
             TextFormField(
@@ -72,6 +77,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                 hintText: 'Enter  email address',
                 icon: Icon(Icons.mail),
               ),
+              keyboardType: TextInputType.emailAddress,
             ),
             SizedBox(height: 20),
             TextFormField(
@@ -85,25 +91,34 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
             ),
             SizedBox(height: 10),
             TextFormField(
+              obscureText: _hidePass,
+              maxLength: 8,
               decoration: InputDecoration(
                 labelText: 'Password',
                 hintText: 'Enter the password',
                 suffixIcon: IconButton(
-                  onPressed: () {},
-                  icon: Icon(Icons.visibility),
+                  onPressed: () {
+                    setState(() {
+                      _hidePass = !_hidePass;
+                    });
+                  },
+                  icon:
+                      Icon(_hidePass ? Icons.visibility : Icons.visibility_off),
                 ),
                 icon: Icon(Icons.security),
               ),
             ),
             SizedBox(height: 10),
             TextFormField(
+              obscureText: _hidePass,
+              maxLength: 8,
               decoration: InputDecoration(
                 labelText: 'Confirm Password',
                 hintText: 'Confirm the password',
-                suffixIcon: IconButton(
-                  onPressed: () {},
-                  icon: Icon(Icons.visibility),
-                ),
+                // suffixIcon: IconButton(
+                //   onPressed: () {},
+                //   icon: Icon(Icons.visibility),
+                // ),
                 icon: Icon(Icons.border_color),
               ),
             ),
