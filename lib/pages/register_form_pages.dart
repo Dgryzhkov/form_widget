@@ -174,14 +174,14 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
     }
   }
 
-  String? _validateName(String value) {
+  String? _validateName(String? value) {
     final _nameExp = RegExp(r'[A-Za-z]+$');
-    if (value.isEmpty) {
+    if (value!.isEmpty) {
       return 'Name is requared';
     } else if (_nameExp.hasMatch(value)) {
-      return 'Please enter alphabetical characters';
-    } else {
       return null;
+    } else {
+      return 'Please enter alphabetical characters';
     }
   }
 }
