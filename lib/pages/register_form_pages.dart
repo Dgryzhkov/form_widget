@@ -21,6 +21,10 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
   List<String> _countries = ['Russia', 'Ukraine', 'Germany', 'France'];
   dynamic _selectedCountry; //решить вопрос с динамиком
 
+  final _nameFocus = FocusNode();
+  final _phoneFocus = FocusNode();
+  final _passFocus = FocusNode();
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -29,7 +33,16 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
     _storyController.dispose();
     _passwordController.dispose();
     _confirmController.dispose();
+    _nameFocus.dispose();
+    _phoneFocus.dispose();
+    _passFocus.dispose();
     super.dispose();
+  }
+
+  void _fieldFocusChange(
+      BuildContext context, FocusNode currentFocus, FocusNode nextFocus) {
+    currentFocus.unfocus();
+    FocusScope.of(context).requestFocus(nextFocus);
   }
 
   @override
@@ -45,6 +58,11 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
           padding: EdgeInsets.all(16.0),
           children: [
             TextFormField(
+              focusNode: _nameFocus,
+              autofocus: true,
+              onFieldSubmitted: (_) {
+                _fieldFocusChange(context, _nameFocus, _phoneFocus);
+              },
               controller: _nameController,
               decoration: InputDecoration(
                 labelText: 'Full name *',
@@ -71,6 +89,11 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
             ),
             SizedBox(height: 10),
             TextFormField(
+              focusNode: _phoneFocus,
+              autofocus: true,
+              onFieldSubmitted: (_) {
+                _fieldFocusChange(context, _phoneFocus, _passFocus);
+              },
               controller: _phoneController,
               decoration: InputDecoration(
                 labelText: 'Phone Number',
@@ -135,9 +158,9 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                 });
               },
               value: _selectedCountry,
-              validator: (val) {
-                return val == null ? 'Please select a country' : null;
-              },
+              // validator: (val) {
+              //   return val == null ? 'Please select a country' : null;
+              // },
             ),
             SizedBox(height: 20),
             TextFormField(
@@ -155,6 +178,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
             ),
             SizedBox(height: 10),
             TextFormField(
+              focusNode: _passFocus,
               controller: _passwordController,
               obscureText: _hidePass,
               maxLength: 8,
@@ -209,6 +233,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
       print('Phone: ${_phoneController.text}');
       print('Email: ${_emailController.text}');
       print('Story: ${_storyController.text}');
+      print('Counry: $_selectedCountry');
     } else {
       print('Form is not valid Please revew and correct');
     }
