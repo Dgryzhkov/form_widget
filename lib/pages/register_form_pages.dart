@@ -18,6 +18,9 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
   final _passwordController = TextEditingController();
   final _confirmController = TextEditingController();
 
+  List<String> _countries = ['Russia', 'Ukraine', 'Germany', 'France'];
+  dynamic _selectedCountry; //решить вопрос с динамиком
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -92,7 +95,15 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                 ),
               ),
               keyboardType: TextInputType.phone,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              inputFormatters: [
+                //FilteringTextInputFormatter.digitsOnly
+
+                FilteringTextInputFormatter(RegExp(r'^[()\d-]{1-15}$'),
+                    allow: false)
+              ],
+              validator: (value) => _validatePhoneNumber(value!)
+                  ? null
+                  : 'Phone number must be  entered as (###)###-####',
             ),
             SizedBox(height: 10),
             TextFormField(
@@ -103,6 +114,30 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                 icon: Icon(Icons.mail),
               ),
               keyboardType: TextInputType.emailAddress,
+              validator: _validateEmail,
+            ),
+            SizedBox(height: 10),
+            DropdownButtonFormField(
+              decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  icon: Icon(Icons.map),
+                  labelText: 'Country?'),
+              items: _countries.map((country) {
+                return DropdownMenuItem(
+                  child: Text(country),
+                  value: country,
+                );
+              }).toList(),
+              onChanged: (data) {
+                print(data);
+                setState(() {
+                  _selectedCountry = data;
+                });
+              },
+              value: _selectedCountry,
+              validator: (val) {
+                return val == null ? 'Please select a country' : null;
+              },
             ),
             SizedBox(height: 20),
             TextFormField(
@@ -137,6 +172,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                 ),
                 icon: Icon(Icons.security),
               ),
+              validator: _validatePeassowrd,
             ),
             SizedBox(height: 10),
             TextFormField(
@@ -148,6 +184,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                 hintText: 'Confirm the password',
                 icon: Icon(Icons.border_color),
               ),
+              validator: _validatePeassowrd,
             ),
             SizedBox(height: 15),
             RaisedButton(
@@ -166,11 +203,14 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
 
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
       print('Form is valid');
       print('Name: ${_nameController.text}');
       print('Phone: ${_phoneController.text}');
       print('Email: ${_emailController.text}');
       print('Story: ${_storyController.text}');
+    } else {
+      print('Form is not valid Please revew and correct');
     }
   }
 
@@ -182,6 +222,31 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
       return null;
     } else {
       return 'Please enter alphabetical characters';
+    }
+  }
+
+  bool _validatePhoneNumber(String input) {
+    final _phoneExp = RegExp(r'^\(\d\d\d\)\d\d\d-\d\d\d\d$');
+    return _phoneExp.hasMatch(input);
+  }
+
+  String? _validateEmail(String? value) {
+    if (value!.isEmpty) {
+      return ' Email cannot be empty';
+    } else if (!_emailController.text.contains('@')) {
+      return 'invalid email';
+    } else {
+      return null;
+    }
+  }
+
+  String? _validatePeassowrd(String? value) {
+    if (_passwordController.text.length != 8) {
+      return ' 8 character required for password';
+    } else if (_confirmController.text != _passwordController.text) {
+      return 'Password does not match';
+    } else {
+      return null;
     }
   }
 }
